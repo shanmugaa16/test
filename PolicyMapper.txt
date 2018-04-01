@@ -1,0 +1,61 @@
+import java.io.IOException; 
+import java.text.ParseException; 
+
+import org.apache.hadoop.io.IntWritable; 
+import org.apache.hadoop.io.LongWritable; 
+import org.apache.hadoop.io.Text; 
+import org.apache.hadoop.mapreduce.Mapper; 
+import org.apache.hadoop.mapreduce.Mapper.Context; 
+
+
+public class PolicyMapper extends Mapper<LongWritable, Text, Text, IntWritable> {
+
+	private final static IntWritable one = new IntWritable(1);
+
+	public void map(LongWritable key, Text value, Context con) throws IOException, InterruptedException {
+
+		String record = value.toString(); 
+		String[] fields = record.split("[,]"); 
+
+
+		if ("Liability Insurance".equals(fields[6])){	
+		 	String[] coveragesAmount= fields[5].split("[|]"); 
+		        Set<Integer> amounts = new HashSet<Integer>(minValue.length);
+			for(String amount: minValue){
+				amounts.add(Integer.parseInt(amount));
+			}
+			//Sort the collection and get min value
+			int min = Collection.min(amounts);
+			if(min>400){
+			
+			con.write(new Text(record),one);
+		}
+
+		
+}
+
+----------------
+package com.htc.hadoop.mapreduce; 
+ 
+import java.io.IOException; 
+ 
+ 
+import org.apache.hadoop.io.IntWritable; 
+import org.apache.hadoop.io.Text; 
+import org.apache.hadoop.mapreduce.Reducer; 
+
+ 
+public class PolicyReducer  extends Reducer<Text, IntWritable, Text, IntWritable>{ 
+ 
+ 
+ 	public void reduce(Text policy, Iterable<StringWritable> values, Context con) throws IOException, InterruptedException { 
+ 	 
+ 		Text key = policy; 
+ 		int frequency = 0; 
+ /*		for(IntWritable value : values) { 
+			// replace type of value with the actual type of our value 
+ 			frequency += value.get(); 
+ 		} */
+ 		con.write(key, new IntWritable(frequency)); 
+ 	} 
+ } 
